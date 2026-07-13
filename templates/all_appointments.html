@@ -1,0 +1,93 @@
+{% extends 'layout.html' %}
+{% block title %}All Appointments{% endblock %}
+
+{% block body %}
+<div class="dashboard">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <a href="/doctor/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+      <a href="/doctor/all-appointments" class="sidebar-link active"><span>📋</span> All Appointments</a>
+      <a href="/doctor/audit" class="sidebar-link"><span>🔍</span> Audit Logs</a>
+      <a href="/doctors/list" class="sidebar-link"><span>👨‍⚕️</span> Medical Team</a>
+    </div>
+    <div class="sidebar-section" style="margin-top: 24px;">
+      <div class="sidebar-label">Account</div>
+      <a href="/logout" class="sidebar-link"><span>🚪</span> Logout</a>
+    </div>
+    <div style="padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 32px;">
+      <div class="sidebar-avatar">{{ current_user.username[0].upper() }}</div>
+      <div style="margin-top: 10px;">
+        <div class="sidebar-user-name">Dr. {{ current_user.username }}</div>
+        <div class="sidebar-user-role">Doctor</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="dash-content">
+    <div class="dash-header">
+      <h1 class="dash-title">All Appointments 📋</h1>
+      <p class="dash-subtitle">Complete list of all patient appointments in the system.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">Appointment Records</h2>
+        <span style="font-size:14px; color:var(--slate);">{{ appointments|length }} total</span>
+      </div>
+
+      {% if appointments %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Patient</th>
+              <th>Contact</th>
+              <th>Doctor</th>
+              <th>Department</th>
+              <th>Disease</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Slot</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appointments %}
+            <tr>
+              <td>{{ a.appointment_id }}</td>
+              <td>
+                <div style="font-weight:600;">{{ a.patient.name }}</div>
+                <div style="font-size:12px; color:var(--slate);">{{ a.patient.gender }}</div>
+              </td>
+              <td>
+                <div style="font-size:13px;">{{ a.patient.email }}</div>
+                <div style="font-size:12px; color:var(--slate);">{{ a.patient.number }}</div>
+              </td>
+              <td>Dr. {{ a.doctor.doctorname }}</td>
+              <td>{{ a.doctor.department.dept_name }}</td>
+              <td>{{ a.disease.disease_name }}</td>
+              <td>{{ a.appointment_date }}</td>
+              <td>{{ a.appointment_time }}</td>
+              <td>
+                <span class="badge badge-{{ a.slot.lower() if a.slot.lower() in ['morning','evening','night'] else 'default' }}">
+                  {{ a.slot }}
+                </span>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No Appointments Found</div>
+        <div class="empty-desc">No patient appointments have been booked yet.</div>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}

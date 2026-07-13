@@ -1,0 +1,88 @@
+{% extends 'layout.html' %}
+{% block title %}Audit Logs{% endblock %}
+
+{% block body %}
+<div class="dashboard">
+
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <a href="/doctor/dashboard" class="sidebar-link"><span>📊</span> Dashboard</a>
+      <a href="/doctor/all-appointments" class="sidebar-link"><span>📋</span> All Appointments</a>
+      <a href="/doctor/audit" class="sidebar-link active"><span>🔍</span> Audit Logs</a>
+      <a href="/doctors/list" class="sidebar-link"><span>👨‍⚕️</span> Medical Team</a>
+    </div>
+    <div class="sidebar-section" style="margin-top: 24px;">
+      <div class="sidebar-label">Account</div>
+      <a href="/logout" class="sidebar-link"><span>🚪</span> Logout</a>
+    </div>
+    <div style="padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 32px;">
+      <div class="sidebar-avatar">{{ current_user.username[0].upper() }}</div>
+      <div style="margin-top: 10px;">
+        <div class="sidebar-user-name">Dr. {{ current_user.username }}</div>
+        <div class="sidebar-user-role">Doctor</div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="dash-content">
+    <div class="dash-header">
+      <h1 class="dash-title">Audit Logs 🔍</h1>
+      <p class="dash-subtitle">Complete action history from database triggers — every insert, update, and delete.</p>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">System Activity Log</h2>
+        <span style="font-size:14px; color:var(--slate);">{{ logs|length }} records</span>
+      </div>
+
+      {% if logs %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Log ID</th>
+              <th>Patient ID</th>
+              <th>Action</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for log in logs %}
+            <tr>
+              <td><code style="font-size:13px; color:var(--slate);">#{{ log.tid }}</code></td>
+              <td>
+                <strong>PID {{ log.pid }}</strong>
+              </td>
+              <td>
+                {% if 'INSERT' in log.action.upper() or 'INSERTED' in log.action.upper() %}
+                  <span class="log-action-insert">✅ {{ log.action }}</span>
+                {% elif 'UPDATE' in log.action.upper() or 'UPDATED' in log.action.upper() %}
+                  <span class="log-action-update">✏️ {{ log.action }}</span>
+                {% elif 'DELETE' in log.action.upper() or 'DELETED' in log.action.upper() %}
+                  <span class="log-action-delete">🗑️ {{ log.action }}</span>
+                {% else %}
+                  {{ log.action }}
+                {% endif %}
+              </td>
+              <td style="font-size:13px; color:var(--slate);">{{ log.timestamp }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-title">No Audit Records</div>
+        <div class="empty-desc">
+          Audit logs are populated by MySQL triggers on the patients table.
+          Once patients are added, edited, or removed, logs will appear here.
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </main>
+</div>
+{% endblock %}

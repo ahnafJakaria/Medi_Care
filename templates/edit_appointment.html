@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+{% block title %}Edit Appointment{% endblock %}
+
+{% block body %}
+<div class="book-page">
+
+  <div class="section-header">
+    <div class="section-tag">✏️ Edit</div>
+    <h2 class="section-title">Update <span>Appointment</span></h2>
+    <p class="section-sub">Change your appointment details below.</p>
+  </div>
+
+  <div class="book-card">
+    <form method="POST">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Select Doctor</label>
+          <select class="form-control" name="did" required>
+            {% for doc in doctors %}
+            <option value="{{ doc.did }}"
+              {{ 'selected' if doc.did == appointment.did }}>
+              Dr. {{ doc.doctorname }} — {{ doc.department.dept_name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Disease / Condition</label>
+          <select class="form-control" name="disease_id" required>
+            {% for d in diseases %}
+            <option value="{{ d.disease_id }}"
+              {{ 'selected' if d.disease_id == appointment.disease_id }}>
+              {{ d.disease_name }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Preferred Slot</label>
+          <select class="form-control" name="slot" required>
+            <option value="Morning" {{ 'selected' if appointment.slot == 'Morning' }}>🌅 Morning</option>
+            <option value="Evening" {{ 'selected' if appointment.slot == 'Evening' }}>🌆 Evening</option>
+            <option value="Night"   {{ 'selected' if appointment.slot == 'Night'   }}>🌙 Night</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Appointment Date</label>
+          <input class="form-control" type="date" name="date"
+                 value="{{ appointment.appointment_date }}" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Appointment Time</label>
+        <input class="form-control" type="time" name="time"
+               value="{{ appointment.appointment_time }}" required>
+      </div>
+
+      <div style="display:flex; gap:16px; margin-top:32px;">
+        <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+        <a href="/patient/dashboard"
+           class="btn btn-outline"
+           style="color:var(--navy); border-color:rgba(10,22,40,0.2);">
+          Cancel
+        </a>
+      </div>
+
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,205 @@
+{% extends 'layout.html' %}
+{% block title %}Home{% endblock %}
+
+{% block body %}
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-badge">⚕️ &nbsp; Trusted Healthcare Since 2005</div>
+    <h1 class="hero-title">
+      Expert Care,<br>
+      <span>Every Step</span> of the Way
+    </h1>
+    <p class="hero-desc">
+      Book appointments with world-class doctors, manage your health records,
+      and experience seamless healthcare — all in one place.
+    </p>
+    <div class="hero-actions">
+      {% if current_user.is_authenticated %}
+        {% if current_user.usertype == 'Patient' %}
+          <a href="/patient/book" class="btn btn-primary">📅 Book Appointment</a>
+          <a href="/patient/dashboard" class="btn btn-outline">My Dashboard →</a>
+        {% else %}
+          <a href="/doctor/dashboard" class="btn btn-primary">📊 Doctor Dashboard</a>
+        {% endif %}
+      {% else %}
+        <a href="/signup" class="btn btn-primary">Get Started Free</a>
+        <a href="/doctors/list" class="btn btn-outline">Meet Our Doctors →</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- ── Stats Bar ── -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-number">250+</div>
+    <div class="stat-label">Expert Doctors</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">50k+</div>
+    <div class="stat-label">Patients Served</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">30+</div>
+    <div class="stat-label">Specializations</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">24/7</div>
+    <div class="stat-label">Always Available</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-number">99%</div>
+    <div class="stat-label">Patient Satisfaction</div>
+  </div>
+</div>
+
+<!-- ── Our Doctors ── -->
+<section class="section" style="background: var(--white);">
+  <div class="section-header">
+    <div class="section-tag">👨‍⚕️ Medical Team</div>
+    <h2 class="section-title">Meet Our <span>Specialists</span></h2>
+    <p class="section-sub">Highly experienced doctors dedicated to your wellbeing.</p>
+  </div>
+
+  {% if doctors %}
+    <div class="doctors-grid">
+     {% set all_photos = [
+  'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80',
+  'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80',
+  'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80',
+  'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80',
+  'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&q=80',
+  'https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=400&q=80',
+  'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&q=80',
+  'https://images.unsplash.com/photo-1643297654416-05795d62e39c?w=400&q=80'
+] %}
+
+{% for doc in doctors[:6] %}
+<div class="doctor-card">
+  <img class="doctor-photo"
+     src="{{ all_photos[loop.index0 % all_photos|length] }}"
+     alt="Dr. {{ doc.doctorname }}"
+     loading="lazy">
+        <div class="doctor-info">
+          <div class="doctor-dept">{{ doc.department.dept_name }}</div>
+          <div class="doctor-name">Dr. {{ doc.doctorname }}</div>
+          <div class="doctor-email">{{ doc.email }}</div>
+          {% if current_user.is_authenticated and current_user.usertype == 'Patient' %}
+            <a href="/patient/book" class="btn btn-navy btn-sm">Book Appointment</a>
+          {% elif not current_user.is_authenticated %}
+            <a href="/signup" class="btn btn-navy btn-sm">Book Now</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div style="text-align:center; margin-top: 40px;">
+      <a href="/doctors/list" class="btn btn-navy">View All Doctors →</a>
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">👨‍⚕️</div>
+      <div class="empty-title">No doctors listed yet</div>
+      <div class="empty-desc">Check back soon for our medical team.</div>
+    </div>
+  {% endif %}
+</section>
+
+<!-- ── Services ── -->
+<section class="services-bg">
+  <div class="section-header">
+    <div class="section-tag" style="color: var(--gold);">🏥 What We Offer</div>
+    <h2 class="section-title" style="color: var(--white);">World-Class <span>Medical Services</span></h2>
+    <p class="section-sub" style="color: rgba(255,255,255,0.5);">Comprehensive healthcare across all specializations.</p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card">
+      <div class="service-icon">❤️</div>
+      <div class="service-title">Cardiology</div>
+      <div class="service-desc">Advanced heart care and cardiovascular treatments.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🧠</div>
+      <div class="service-title">Neurology</div>
+      <div class="service-desc">Expert diagnosis and treatment of neurological disorders.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🦴</div>
+      <div class="service-title">Orthopedics</div>
+      <div class="service-desc">Joint, bone, and musculoskeletal care specialists.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">👁️</div>
+      <div class="service-title">Ophthalmology</div>
+      <div class="service-desc">Comprehensive eye care and vision correction.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🍼</div>
+      <div class="service-title">Pediatrics</div>
+      <div class="service-desc">Specialized healthcare for infants, children, and teens.</div>
+    </div>
+    <div class="service-card">
+      <div class="service-icon">🔬</div>
+      <div class="service-title">Diagnostics</div>
+      <div class="service-desc">State-of-the-art lab testing and imaging services.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Why Us ── -->
+<div class="why-section">
+  <div class="why-image-wrap">
+    <img src="https://images.unsplash.com/photo-1551190822-a9333d879b1f?w=800&q=80" alt="Medical team">
+    <div class="why-image-badge">
+      <div class="why-badge-number">20+</div>
+      <div class="why-badge-text">Years of Excellence</div>
+    </div>
+  </div>
+  <div>
+    <div class="section-tag">🌟 Why Choose Us</div>
+    <h2 class="section-title">Healthcare Built Around <span>You</span></h2>
+    <p style="color: var(--slate); margin-top: 16px; line-height: 1.7;">
+      We combine cutting-edge medical technology with genuine compassion to deliver
+      healthcare experiences that truly make a difference.
+    </p>
+    <ul class="why-list">
+      <li class="why-item">
+        <div class="why-icon">🔒</div>
+        <div>
+          <div class="why-item-title">Secure & Private</div>
+          <div class="why-item-desc">Your health data is encrypted and protected at every level.</div>
+        </div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">⚡</div>
+        <div>
+          <div class="why-item-title">Instant Booking</div>
+          <div class="why-item-desc">Book, edit, or cancel appointments in seconds from any device.</div>
+        </div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">👨‍⚕️</div>
+        <div>
+          <div class="why-item-title">Verified Specialists</div>
+          <div class="why-item-desc">Every doctor is board-certified and extensively vetted.</div>
+        </div>
+      </li>
+      <li class="why-item">
+        <div class="why-icon">📊</div>
+        <div>
+          <div class="why-item-title">Full Transparency</div>
+          <div class="why-item-desc">Complete audit trail of all actions for accountability.</div>
+        </div>
+      </li>
+    </ul>
+    <div style="margin-top: 36px;">
+      <a href="/signup" class="btn btn-primary">Join MediCare Today →</a>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

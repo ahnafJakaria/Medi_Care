@@ -1,0 +1,129 @@
+{% extends 'layout.html' %}
+{% block title %}Patient Dashboard{% endblock %}
+
+{% block body %}
+<div class="dashboard">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Navigation</div>
+      <a href="/patient/dashboard" class="sidebar-link active">
+        <span>📊</span> Dashboard
+      </a>
+      <a href="/patient/book" class="sidebar-link">
+        <span>📅</span> Book Appointment
+      </a>
+      <a href="/doctors/list" class="sidebar-link">
+        <span>👨‍⚕️</span> Our Doctors
+      </a>
+    </div>
+
+    <div class="sidebar-section" style="margin-top: 24px;">
+      <div class="sidebar-label">Account</div>
+      <a href="/logout" class="sidebar-link">
+        <span>🚪</span> Logout
+      </a>
+    </div>
+
+    <div style="padding: 20px 24px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 32px;">
+      <div class="sidebar-avatar">{{ current_user.username[0].upper() }}</div>
+      <div style="margin-top: 10px;">
+        <div class="sidebar-user-name">{{ current_user.username }}</div>
+        <div class="sidebar-user-role">Patient</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dash-content">
+    <div class="dash-header">
+      <h1 class="dash-title">Good to see you, {{ current_user.username }} 👋</h1>
+      <p class="dash-subtitle">Here's a summary of your healthcare activity.</p>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stat-cards">
+      <div class="stat-card">
+        <div class="stat-card-icon">📅</div>
+        <div class="stat-card-value">{{ appointments|length }}</div>
+        <div class="stat-card-label">Total Appointments</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">✅</div>
+        <div class="stat-card-value">
+          {{ appointments | selectattr('appointment_date') | list | length }}
+        </div>
+        <div class="stat-card-label">Active Bookings</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-icon">👨‍⚕️</div>
+        <div class="stat-card-value">{{ appointments | map(attribute='doctor') | list | unique | list | length }}</div>
+        <div class="stat-card-label">Doctors Consulted</div>
+      </div>
+    </div>
+
+    <!-- Appointments Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">My Appointments</h2>
+        <a href="/patient/book" class="btn btn-primary btn-sm">+ Book New</a>
+      </div>
+
+      {% if appointments %}
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Doctor</th>
+              <th>Department</th>
+              <th>Disease</th>
+              <th>Date</th>
+              <th>Time</th>
+              <th>Slot</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for a in appointments %}
+            <tr>
+              <td>{{ a.appointment_id }}</td>
+              <td>
+                <strong>Dr. {{ a.doctor.doctorname }}</strong>
+              </td>
+              <td>{{ a.doctor.department.dept_name }}</td>
+              <td>{{ a.disease.disease_name }}</td>
+              <td>{{ a.appointment_date }}</td>
+              <td>{{ a.appointment_time }}</td>
+              <td>
+                <span class="badge badge-{{ a.slot.lower() if a.slot.lower() in ['morning','evening','night'] else 'default' }}">
+                  {{ a.slot }}
+                </span>
+              </td>
+              <td>
+                <div style="display:flex; gap:8px;">
+                  <a href="/patient/edit/{{ a.appointment_id }}" class="btn btn-navy btn-sm">✏️ Edit</a>
+                  <a href="/patient/delete/{{ a.appointment_id }}"
+                     class="btn btn-danger btn-sm"
+                     onclick="return confirm('Cancel this appointment?')">🗑️ Cancel</a>
+                </div>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <div class="empty-title">No Appointments Yet</div>
+        <div class="empty-desc">Book your first appointment with one of our specialists.</div>
+        <a href="/patient/book" class="btn btn-primary">Book Appointment</a>
+      </div>
+      {% endif %}
+    </div>
+
+  </main>
+</div>
+{% endblock %}

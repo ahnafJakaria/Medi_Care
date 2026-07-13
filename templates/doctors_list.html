@@ -1,0 +1,73 @@
+{% extends 'layout.html' %}
+{% block title %}Our Doctors{% endblock %}
+
+{% block body %}
+
+<div style="background: var(--navy); padding: 60px 80px; position:relative; overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:url('https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1600&q=80');background-size:cover;background-position:center;opacity:0.12;"></div>
+  <div style="position:relative; z-index:1;">
+    <div class="section-tag">👨‍⚕️ Medical Team</div>
+    <h1 class="section-title" style="color:var(--white); margin-top:8px;">
+      Our <span>Specialists</span>
+    </h1>
+    <p style="color:rgba(255,255,255,0.6); margin-top:12px; max-width:480px; font-size:16px;">
+      Board-certified doctors across every major specialty, committed to your care.
+    </p>
+  </div>
+</div>
+
+<section class="section" style="background: var(--light);">
+
+  <div class="filter-bar">
+    <a href="/doctors/list" class="filter-btn {% if not selected %}active{% endif %}">All Departments</a>
+    {% for dept in departments %}
+    <a href="/doctors/list?dept={{ dept.dept_id }}"
+       class="filter-btn {% if selected == dept.dept_id|string %}active{% endif %}">
+      {{ dept.dept_name }}
+    </a>
+    {% endfor %}
+  </div>
+
+  {% set all_photos = [
+    'https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=400&q=80',
+    'https://images.unsplash.com/photo-1594824476967-48c8b964273f?w=400&q=80',
+    'https://images.unsplash.com/photo-1622253692010-333f2da6031d?w=400&q=80',
+    'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&q=80',
+    'https://images.unsplash.com/photo-1537368910025-700350fe46c7?w=400&q=80',
+    'https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=400&q=80',
+    'https://images.unsplash.com/photo-1582750433449-648ed127bb54?w=400&q=80',
+    'https://images.unsplash.com/photo-1643297654416-05795d62e39c?w=400&q=80'
+  ] %}
+
+  {% if doctors %}
+    <div class="doctors-grid">
+      {% for doc in doctors %}
+      <div class="doctor-card">
+        <img class="doctor-photo"
+             src="{{ all_photos[loop.index0 % all_photos|length] }}"
+             alt="Dr. {{ doc.doctorname }}"
+             loading="lazy">
+        <div class="doctor-info">
+          <div class="doctor-dept">{{ doc.department.dept_name }}</div>
+          <div class="doctor-name">Dr. {{ doc.doctorname }}</div>
+          <div class="doctor-email">📧 {{ doc.email }}</div>
+          {% if current_user.is_authenticated and current_user.usertype == 'Patient' %}
+            <a href="/patient/book" class="btn btn-navy btn-sm" style="margin-top:4px;">Book Appointment</a>
+          {% elif not current_user.is_authenticated %}
+            <a href="/signup" class="btn btn-navy btn-sm" style="margin-top:4px;">Sign Up to Book</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">👨‍⚕️</div>
+      <div class="empty-title">No Doctors Found</div>
+      <div class="empty-desc">No doctors in this department yet.</div>
+      <a href="/doctors/list" class="btn btn-navy">View All Doctors</a>
+    </div>
+  {% endif %}
+
+</section>
+{% endblock %}

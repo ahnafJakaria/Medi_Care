@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MediCare HMS — {% block title %}Hospital Management System{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <a href="/" class="navbar-logo">
+    <div class="logo-icon">M</div>
+    <div>
+      <div class="logo-text">MediCare</div>
+      <span class="logo-sub">Hospital System</span>
+    </div>
+  </a>
+
+  <ul class="navbar-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/doctors/list">Our Doctors</a></li>
+
+    {% if current_user.is_authenticated %}
+      {% if current_user.usertype == 'Patient' %}
+        <li><a href="/patient/dashboard">Dashboard</a></li>
+        <li><a href="/patient/book">Book Appointment</a></li>
+      {% else %}
+        <li><a href="/doctor/dashboard">Dashboard</a></li>
+        <li><a href="/doctor/all-appointments">All Appointments</a></li>
+        <li><a href="/doctor/audit">Audit Logs</a></li>
+      {% endif %}
+      <li><a href="/logout" class="btn-nav-outline">Logout</a></li>
+    {% else %}
+      <li><a href="/login" class="btn-nav-outline">Login</a></li>
+      <li><a href="/signup" class="btn-nav">Get Started</a></li>
+    {% endif %}
+  </ul>
+</nav>
+
+<!-- ── Flash Messages ── -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="flash-container">
+      {% for category, message in messages %}
+        <div class="flash {{ category }}" onclick="this.remove()">
+          {% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning' %}⚠️{% else %}ℹ️{% endif %}
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+    <script>
+      setTimeout(() => {
+        document.querySelectorAll('.flash').forEach(f => f.style.opacity = '0');
+        setTimeout(() => document.querySelectorAll('.flash').forEach(f => f.remove()), 400);
+      }, 4000);
+    </script>
+  {% endif %}
+{% endwith %}
+
+<!-- ── Page Content ── -->
+<div class="page">
+  {% block body %}{% endblock %}
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  © 2024 <span>MediCare</span> Hospital Management System. All rights reserved.
+</footer>
+
+</body>
+</html>
